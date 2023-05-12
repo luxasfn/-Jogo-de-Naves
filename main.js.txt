@@ -1,0 +1,164 @@
+var config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 0 },
+            debug: false
+        }
+    },
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+var game = new Phaser.Game(config);
+
+function preload ()
+{
+    this.load.image('ship', 'assets/ship.png');
+    this.load.image('enemy', 'assets/enemy.png');
+}
+
+function create ()
+{
+    this.add.image(400, 300, 'ship');
+    this.add.image(400, 100, 'enemy');
+}
+
+function update ()
+{
+}
+
+
+var config = {
+    // ...
+    scene: {
+        preload: preload,
+        create: create,
+        update: update,
+        extend: {
+            player: null,
+            enemies: null
+        }
+    }
+};
+
+var game = new Phaser.Game(config);
+
+function preload ()
+{
+    // ...
+}
+
+function create ()
+{
+    this.player = new Player(this, 400, 500);
+    this.enemies = this.physics.add.group();
+
+    for (var i = 0; i < 10; i++)
+    {
+        var enemy = new Enemy(this, Phaser.Math.Between(100, 700), Phaser.Math.Between(50, 200));
+        this.enemies.add(enemy);
+    }
+}
+
+function update ()
+{
+    this.player.update();
+
+    this.enemies.getChildren().forEach(function(enemy) {
+        enemy.update();
+    });
+}
+
+class Player extends Phaser.Physics.Arcade.Sprite {
+    constructor(scene, x, y) {
+        super(scene, x, y, 'ship');
+        scene.add.existing(this);
+        scene.physics.add.existing(this);
+        this.setCollideWorldBounds(true);
+        this.setDrag(500);
+         this.speed = 300;
+}
+
+update() {
+    var cursors = this.scene.input.keyboard.createCursorKeys();
+
+    if (cursors.left.isDown) {
+        this.setVelocityX(-this.speed);
+    }
+    else if (cursors.right.isDown) {
+        this.setVelocityX(this.speed);
+    }
+    else {
+        this.setVelocityX(0);
+    }
+
+    if (cursors.up.isDown) {
+        this.setVelocityY(-this.speed);
+    }
+    else if (cursors.down.isDown) {
+        this.setVelocityY(this.speed);
+    }
+    else {
+        this.setVelocityY(0);
+    }
+}
+}
+
+class Enemy extends Phaser.Physics.Arcade.Sprite {
+constructor(scene, x, y) {
+super(scene, x, y, 'enemy');
+scene.add.existing(this);
+scene.physics.add.existing(this);
+this.setCollideWorldBounds(true);
+this.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(50, 200));
+}
+
+update() {
+    if (this.x < 0) {
+        this.setVelocityX(Phaser.Math.Between(50, 200));
+    }
+    else if (this.x > this.scene.game.config.width) {
+        this.setVelocityX(Phaser.Math.Between(-200, -50));
+    }
+
+    if (this.y < 0) {
+        this.setVelocityY(Phaser.Math.Between(50, 200));
+    }
+    else if (this.y > this.scene.game.config.height / 2) {
+        this.setVelocityY(Phaser.Math.Between(-200, -50));
+    }
+}
+}
+
+class Player extends Phaser.Physics.Arcade.Sprite {
+    // ...
+    
+    onCollide(enemy) {
+        enemy.destroy();
+    }
+}
+
+class Enemy extends Phaser.Physics.Arcade.Sprite {
+    // ...
+    
+    onCollide(player) {
+        player.destroy();
+    }
+}
+function create ()
+{
+    // ...
+    
+    this.physics.add.collider(this.player, this.enemies, function(player, enemy) {
+        player.onCollide(enemy);
+        enemy.onCollide(player);
+    });
+}
+
