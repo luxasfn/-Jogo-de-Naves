@@ -1,7 +1,7 @@
 
 # Jogo de Naves
 
-Este projeto é uma simulação simples e divertida de um jogo de naves espaciais desenvolvido com HTML, CSS e JavaScript puro. Nele, o jogador controla uma nave que pode se mover e atirar para destruir inimigos que aparecem na tela, testando reflexos e coordenação.
+Este projeto é uma simulação simples e divertida de um jogo de naves espaciais(piu, piu, piu) desenvolvido com HTML, CSS e JavaScript puro. Nele, o jogador controla uma nave que pode se mover e atirar para destruir inimigos que aparecem na tela, testando reflexos e coordenação.
 
 ## Objetivo
 
